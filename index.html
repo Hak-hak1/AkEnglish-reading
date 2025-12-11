@@ -4,31 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EnglishBuddy - Trợ lý Tiếng Anh AI</title>
-    
-    <!-- External Styles -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Polyfill for Node.js process (Required for Google GenAI SDK to work in browser) -->
-    <script>
-        window.process = { 
-            env: { NODE_ENV: 'production' } 
-        };
-    </script>
-
-    <!-- Tailwind Config -->
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
               brand: {
-                50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
-                400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
-                800: '#1e40af', 900: '#1e3a8a',
+                50: '#eff6ff',
+                100: '#dbeafe',
+                200: '#bfdbfe',
+                300: '#93c5fd',
+                400: '#60a5fa',
+                500: '#3b82f6',
+                600: '#2563eb',
+                700: '#1d4ed8',
+                800: '#1e40af',
+                900: '#1e3a8a',
               }
             },
-            animation: { 'fade-in': 'fadeIn 0.5s ease-out' },
+            animation: {
+                'fade-in': 'fadeIn 0.5s ease-out',
+            },
             keyframes: {
                 fadeIn: {
                     '0%': { opacity: '0', transform: 'translateY(10px)' },
@@ -40,6 +37,7 @@
       }
     </script>
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
       body { font-family: 'Inter', sans-serif; }
       .custom-scrollbar::-webkit-scrollbar { width: 6px; }
       .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -60,7 +58,6 @@
 </head>
 <body class="bg-slate-50 text-slate-800 h-screen overflow-hidden">
     <div id="root"></div>
-    <!-- Entry point for the React Application -->
     <script type="module" src="/index.tsx"></script>
 </body>
 </html>

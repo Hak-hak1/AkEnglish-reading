@@ -70,7 +70,7 @@ export const analyzeContent = async (input: string, mimeType?: string): Promise<
       model: 'gemini-2.5-flash',
       contents: {
         role: 'user',
-        parts: [contentPart, { text: "Transcribe exactly and analyze." }]
+        parts: [contentPart, { text: "Transcribe this image/file exactly into text and analyze for learning. Provide English definitions AND Vietnamese meanings for vocabulary." }]
       },
       config: {
         systemInstruction: SYSTEM_INSTRUCTION_ANALYSIS,
@@ -111,7 +111,7 @@ export const analyzeContent = async (input: string, mimeType?: string): Promise<
     return {
       id: Date.now().toString(),
       title: data.title,
-      fullText: data.fullText || "No text extracted.",
+      fullText: data.fullText || "No text extracted. Please try a clearer image.",
       summary: data.summary || "",
       vocabulary: (data.vocabulary || []).map((v: any, idx: number) => ({ ...v, id: `vocab-${idx}` })),
       dateCreated: Date.now(),
@@ -120,7 +120,7 @@ export const analyzeContent = async (input: string, mimeType?: string): Promise<
 
   } catch (error) {
     console.error("Gemini Analysis Error:", error);
-    throw new Error("Không thể phân tích nội dung. " + error.message);
+    throw new Error("Không thể phân tích nội dung. Vui lòng kiểm tra lại Key hoặc file.");
   }
 };
 
@@ -129,7 +129,7 @@ export const generateQuiz = async (text: string): Promise<QuizQuestion[]> => {
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: `Create a quiz for: ${text}`,
+      contents: `Create a quiz for this text: ${text}`,
       config: {
         systemInstruction: SYSTEM_INSTRUCTION_QUIZ,
         responseMimeType: "application/json",
@@ -154,17 +154,17 @@ export const generateQuiz = async (text: string): Promise<QuizQuestion[]> => {
     const cleanText = cleanJSON(response.text || "[]");
     return JSON.parse(cleanText);
   } catch (error) {
-    console.error("Quiz Error:", error);
+    console.error("Gemini Quiz Error:", error);
     return [];
   }
 };
 
 export const getWordDefinition = async (word: string, context: string): Promise<Vocabulary> => {
-    if (!ai) return { id: 'err', word, ipa: '', englishDefinition: '', meaning: 'Lỗi Key', type: 'unknown' };
+    if (!ai) return { id: 'err', word, ipa: '', englishDefinition: '', meaning: 'Chưa nhập Key', type: 'unknown' };
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: `Define "${word}" in context: "${context}". Return English definition AND Vietnamese meaning.`,
+            contents: `Define the word "${word}" based on this context: "${context}". Return a simple English Definition AND Vietnamese meaning.`,
             config: {
                 responseMimeType: "application/json",
                 responseSchema: {
@@ -172,19 +172,20 @@ export const getWordDefinition = async (word: string, context: string): Promise<
                     properties: {
                         word: {type: Type.STRING},
                         ipa: {type: Type.STRING},
-                        englishDefinition: {type: Type.STRING},
-                        meaning: {type: Type.STRING},
+                        englishDefinition: {type: Type.STRING, description: "Definition in English"},
+                        meaning: {type: Type.STRING, description: "Meaning in Vietnamese"},
                         type: {type: Type.STRING}
                     }
                 }
             }
         });
-        const data = JSON.parse(cleanJSON(response.text || "{}"));
+        const cleanText = cleanJSON(response.text || "{}");
+        const data = JSON.parse(cleanText);
         return { ...data, id: `quick-${Date.now()}` };
     } catch (e) {
-        return { id: 'err', word, ipa: '', englishDefinition: '', meaning: 'Không tìm thấy', type: 'unknown' };
+        return { id: 'err', word, ipa: '', englishDefinition: '', meaning: 'Không tìm thấy định nghĩa', type: 'unknown' };
     }
-};
+}
 
 export const generateSpeech = async (text: string): Promise<string | null> => {
     if (!ai || !text) return null;
@@ -192,17 +193,20 @@ export const generateSpeech = async (text: string): Promise<string | null> => {
         const safeText = text.slice(0, 3000); 
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash-preview-tts",
-            contents: [{ parts: [{ text: `Read aloud: \n\n ${safeText}` }] }],
+            contents: [{ parts: [{ text: `Read the following text aloud: \n\n ${safeText}` }] }],
             config: {
                 responseModalities: [Modality.AUDIO],
                 speechConfig: {
-                    voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } },
+                    voiceConfig: {
+                        prebuiltVoiceConfig: { voiceName: 'Kore' },
+                    },
                 },
             },
         });
+        
         return response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data || null;
     } catch (error) {
         console.error("TTS Error:", error);
         return null;
     }
-};
+}
