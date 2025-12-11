@@ -28,8 +28,9 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart }) => {
         <div className="min-h-screen bg-brand-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-3xl shadow-xl max-w-md w-full p-8 text-center animate-fade-in">
                 <div className="flex justify-center mb-6">
-                    <div className="bg-slate-900 p-4 rounded-2xl shadow-lg">
-                        <GraduationCap size={48} className="text-brand-500" />
+                    {/* Updated Color Scheme: Bright Orange/Yellow Gradient */}
+                    <div className="bg-gradient-to-br from-yellow-400 to-orange-500 p-4 rounded-2xl shadow-lg shadow-orange-200">
+                        <GraduationCap size={48} className="text-white" />
                     </div>
                 </div>
                 
