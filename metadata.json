@@ -1,0 +1,5 @@
+{
+  "name": "LinguaFlow AI",
+  "description": "An intelligent English learning assistant that transforms any text, image, or PDF into an interactive lesson with vocabulary extraction, audio listening, and auto-generated quizzes.",
+  "requestFramePermissions": []
+}
